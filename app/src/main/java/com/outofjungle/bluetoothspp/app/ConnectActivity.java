@@ -9,16 +9,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.UUID;
+
+import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.makeText;
 
 public class ConnectActivity extends Activity {
 
-  private UUID deviceUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
   private ListView deviceListView;
   private BluetoothAdapter bluetoothAdapter;
 
@@ -31,13 +33,27 @@ public class ConnectActivity extends Activity {
     bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     if (bluetoothAdapter == null) {
-      Toast.makeText(getApplicationContext(), "Bluetooth Not Found", Toast.LENGTH_SHORT).show();
+      makeText(getApplicationContext(), "Bluetooth Not Found", LENGTH_SHORT).show();
     } else if (!bluetoothAdapter.isEnabled()) {
       Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
       startActivityForResult(enableBluetooth, "BT_ENABLE_REQ");
     } else {
       new DeviceSearch().execute();
     }
+
+    deviceListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      @Override
+      public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+        BluetoothDevice device = (BluetoothDevice) adapterView.getItemAtPosition(i);
+
+        Intent intent = new Intent(getApplicationContext(), ConsoleActivity.class);
+        intent.putExtra("DEVICE", device);
+        startActivity(intent);
+
+        return true;
+      }
+    });
   }
 
   private void startActivityForResult(Intent enableBluetooth, String bt_enable_req) {
@@ -73,7 +89,6 @@ public class ConnectActivity extends Activity {
         listDevices.add(device);
       }
       return listDevices;
-
     }
 
     @Override
@@ -83,7 +98,7 @@ public class ConnectActivity extends Activity {
         DeviceAdapter adapter = new DeviceAdapter(getBaseContext(), listDevices);
         deviceListView.setAdapter(adapter);
       } else {
-        Toast.makeText(getApplicationContext(), "Device Not Found", Toast.LENGTH_SHORT).show();
+        makeText(getApplicationContext(), "Device Not Found", LENGTH_SHORT).show();
       }
     }
   }
