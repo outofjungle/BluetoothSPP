@@ -38,7 +38,6 @@ public class ConsoleActivity extends Activity {
     Intent intent = getIntent();
     Bundle b = intent.getExtras();
     bluetoothDevice = b.getParcelable("DEVICE");
-    androidUUID = UUID.fromString(b.getString("UUID"));
     messageView = (TextView) findViewById(R.id.messageView);
 
     setTitle(String.format(bluetoothDevice.getName()));
