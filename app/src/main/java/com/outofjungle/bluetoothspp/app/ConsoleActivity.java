@@ -8,13 +8,18 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.outofjungle.bluetoothspp.app.models.Message;
+import com.outofjungle.bluetoothspp.app.models.Writer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -27,8 +32,11 @@ public class ConsoleActivity extends Activity {
   private BluetoothDevice bluetoothDevice;
   private BluetoothSocket bluetoothSocket;
   private boolean bluetoothConnected = false;
-  private TextView messageView;
   private RxRunner RxThread = null;
+
+  private MessageAdapter messageListAdapter;
+  private ArrayList<Message> messageList = new ArrayList<Message>();
+  private ListView messageListView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +46,12 @@ public class ConsoleActivity extends Activity {
     Intent intent = getIntent();
     Bundle b = intent.getExtras();
     bluetoothDevice = b.getParcelable("DEVICE");
-    messageView = (TextView) findViewById(R.id.messageView);
+    messageListView = (ListView) findViewById(R.id.messageListView);
 
     setTitle(String.format(bluetoothDevice.getName()));
+
+    messageListAdapter = new MessageAdapter(getBaseContext(), messageList);
+    messageListView.setAdapter(messageListAdapter);
   }
 
   @Override
@@ -178,10 +189,13 @@ public class ConsoleActivity extends Activity {
             }
             final String rxText = new String(buffer, 0, i);
 
-            messageView.post(new Runnable() {
+            messageListView.post(new Runnable() {
               @Override
               public void run() {
-                messageView.append(rxText);
+                Log.d("DEBUG", rxText);
+                Message message = new Message(rxText, Writer.ARDUINO);
+                messageList.add(message);
+                messageListAdapter.notifyDataSetChanged();
               }
             });
           }
