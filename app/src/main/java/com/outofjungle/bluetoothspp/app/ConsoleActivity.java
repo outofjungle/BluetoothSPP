@@ -63,17 +63,17 @@ public class ConsoleActivity extends Activity {
     txButton = (Button) findViewById(R.id.txButton);
 
     txButton.setOnClickListener(new View.OnClickListener() {
-
       @Override
       public void onClick(View arg0) {
         try {
           final String txText = txEditText.getText().toString();
           bluetoothSocket.getOutputStream().write(txText.getBytes());
+          txEditText.setText("");
 
           messageListView.post(new Runnable() {
             @Override
             public void run() {
-              Log.d("DEBUG", txText);
+              Log.d("TX", txText);
               Message message = new Message(txText, Writer.ANDROID);
               messageList.add(message);
               messageListAdapter.notifyDataSetChanged();
@@ -224,7 +224,7 @@ public class ConsoleActivity extends Activity {
             messageListView.post(new Runnable() {
               @Override
               public void run() {
-                Log.d("DEBUG", rxText);
+                Log.d("RX", rxText);
                 Message message = new Message(rxText, Writer.ARDUINO);
                 messageList.add(message);
                 messageListAdapter.notifyDataSetChanged();
