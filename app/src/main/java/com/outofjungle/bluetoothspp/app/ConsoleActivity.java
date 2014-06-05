@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -32,7 +35,10 @@ public class ConsoleActivity extends Activity {
   private BluetoothDevice bluetoothDevice;
   private BluetoothSocket bluetoothSocket;
   private boolean bluetoothConnected = false;
-  private RxRunner RxThread = null;
+  private RxRunner rxRunner = null;
+
+  private Button txButton;
+  private EditText txEditText;
 
   private MessageAdapter messageListAdapter;
   private ArrayList<Message> messageList = new ArrayList<Message>();
@@ -46,12 +52,38 @@ public class ConsoleActivity extends Activity {
     Intent intent = getIntent();
     Bundle b = intent.getExtras();
     bluetoothDevice = b.getParcelable("DEVICE");
-    messageListView = (ListView) findViewById(R.id.messageListView);
 
     setTitle(String.format(bluetoothDevice.getName()));
 
     messageListAdapter = new MessageAdapter(getBaseContext(), messageList);
+    messageListView = (ListView) findViewById(R.id.messageListView);
     messageListView.setAdapter(messageListAdapter);
+
+    txEditText = (EditText) findViewById(R.id.txText);
+    txButton = (Button) findViewById(R.id.txButton);
+
+    txButton.setOnClickListener(new View.OnClickListener() {
+
+      @Override
+      public void onClick(View arg0) {
+        try {
+          final String txText = txEditText.getText().toString();
+          bluetoothSocket.getOutputStream().write(txText.getBytes());
+
+          messageListView.post(new Runnable() {
+            @Override
+            public void run() {
+              Log.d("DEBUG", txText);
+              Message message = new Message(txText, Writer.ANDROID);
+              messageList.add(message);
+              messageListAdapter.notifyDataSetChanged();
+            }
+          });
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
   }
 
   @Override
@@ -123,7 +155,7 @@ public class ConsoleActivity extends Activity {
       } else {
         makeText(getApplicationContext(), String.format("Connected to %s", bluetoothDevice.getName()), LENGTH_SHORT).show();
         bluetoothConnected = true;
-        RxThread = new RxRunner();
+        rxRunner = new RxRunner();
       }
       progressDialog.dismiss();
     }
@@ -138,10 +170,10 @@ public class ConsoleActivity extends Activity {
     @Override
     protected Void doInBackground(Void... params) {
 
-      if (RxThread != null) {
-        RxThread.stop();
-        while (RxThread.isRunning()) ;
-        RxThread = null;
+      if (rxRunner != null) {
+        rxRunner.stop();
+        while (rxRunner.isRunning()) ;
+        rxRunner = null;
       }
 
       try {
