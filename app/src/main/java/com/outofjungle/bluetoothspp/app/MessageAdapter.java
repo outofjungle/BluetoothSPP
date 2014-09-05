@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.outofjungle.bluetoothspp.app.models.Message;
+import com.outofjungle.bluetoothspp.app.models.Writer;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,14 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     TextView writerName = (TextView) convertView.findViewById(R.id.writerName);
     TextView messageText = (TextView) convertView.findViewById(R.id.messageText);
 
-    writerName.setText(message.getWriter().toString());
+    Enum writer = message.getWriter();
+    if (Writer.ANDROID == writer) {
+      writerName.setTextColor(0xFF04B404);
+    } else if (Writer.ARDUINO == writer) {
+      writerName.setTextColor(0xFF0000FF);
+    }
+
+    writerName.setText(writer.toString());
     messageText.setText(message.getText());
 
     return convertView;
