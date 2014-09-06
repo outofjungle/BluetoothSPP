@@ -1,6 +1,8 @@
 ![Console](https://raw.githubusercontent.com/outofjungle/BluetoothSPP/master/app/src/main/res/drawable-hdpi/ic_launcher.png)
 # Bluetooth SPP Android App
 
+An android app to send and receive messages from any bluetooth SPP device. 
+
 # Enhancements
 
 * TODO: Use fragments
