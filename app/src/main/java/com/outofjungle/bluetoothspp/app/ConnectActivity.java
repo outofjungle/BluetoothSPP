@@ -28,6 +28,7 @@ public class ConnectActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_connect);
+    setTitle(R.string.title_activity_connect);
 
     deviceListView = (ListView) findViewById(R.id.deviceListView);
     bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
