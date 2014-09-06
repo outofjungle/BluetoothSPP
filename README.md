@@ -1,3 +1,6 @@
+![Console](https://raw.githubusercontent.com/outofjungle/BluetoothSPP/master/app/src/main/res/drawable-hdpi/ic_launcher.png)
+# Bluetooth SPP Android App
+
 # Enhancements
 
 * TODO: Use fragments
