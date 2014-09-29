@@ -77,6 +77,7 @@ public class ConsoleActivity extends Activity {
               Message message = new Message(txText, Writer.ANDROID);
               messageList.add(message);
               messageListAdapter.notifyDataSetChanged();
+              messageListView.setSelection(messageListAdapter.getCount() - 1);
             }
           });
         } catch (IOException e) {
@@ -228,6 +229,7 @@ public class ConsoleActivity extends Activity {
                 Message message = new Message(rxText, Writer.ARDUINO);
                 messageList.add(message);
                 messageListAdapter.notifyDataSetChanged();
+                messageListView.setSelection(messageListAdapter.getCount() - 1);
               }
             });
           }
